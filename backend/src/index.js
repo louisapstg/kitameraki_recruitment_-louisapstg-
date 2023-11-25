@@ -82,6 +82,17 @@ const server = http.createServer((req, res) => {
       }
    }
 
+   else if (req.method === 'DELETE' && path.startsWith('/items/')) {
+      const itemId = parseInt(path.slice(7), 10)
+      const itemIndex = data.findIndex((item) => item.id === itemId)
+      if (itemIndex !== -1) {
+         const deletedItem = data.splice(itemIndex, 1)[0]
+         successResponse(200, deletedItem, 'Item delete successfully', null, res);
+      } else {
+         errorResponse(404, 'Item not found', res);
+      }
+   }
+
    else {
       errorResponse(405, 'Method not allowed', res);
    }
