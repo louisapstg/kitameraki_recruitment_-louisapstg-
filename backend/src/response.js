@@ -1,9 +1,8 @@
-const successResponse = (statusCode, payload, message, pagination, res) => {
+const successResponse = (statusCode, payload, message, res) => {
    const response = {
       statusCode,
       payload,
       message,
-      pagination,
    };
    res.statusCode = statusCode;
    res.end(JSON.stringify(response));
