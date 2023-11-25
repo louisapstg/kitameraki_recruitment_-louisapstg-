@@ -30,6 +30,27 @@ const server = http.createServer((req, res) => {
       }
    }
 
+   else if (req.method === 'POST' && path === '/items') {
+      let body = ''
+      req.on('data', (chunk) => {
+         body += chunk
+      })
+
+      req.on('end', () => {
+         try {
+            if (!body.trim()) throw new Error("Request body is empty")
+            const newItem = JSON.parse(body);
+            if (!newItem.title) throw new Error("Missing required property '${title}'")
+            newItem.description = newItem.description || ''
+            newItem.id = data.length + 1;
+            data.push(newItem);
+            successResponse(201, newItem, "Data has been sent", data.length, res);
+         } catch (e) {
+            errorResponse(400, e.message, res);
+         }
+      })
+   }
+
    else {
       errorResponse(405, 'Method not allowed', res);
    }
