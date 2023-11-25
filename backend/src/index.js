@@ -51,6 +51,37 @@ const server = http.createServer((req, res) => {
       })
    }
 
+   else if (req.method === 'PUT' && path.startsWith('/items/')) {
+      const itemId = parseInt(path.slice(7), 10);
+      const itemIndex = data.findIndex((item) => item.id === itemId);
+
+      if (itemIndex !== -1) {
+         let body = '';
+
+         req.on('data', (chunk) => {
+            body += chunk;
+         });
+
+         req.on('end', () => {
+            try {
+               if (!body.trim()) throw new Error("Request body is empty.")
+               const updatedItem = JSON.parse(body);
+               if (!updatedItem.title) throw new Error("Missing required title property in the request body.");
+               data[itemIndex] = {
+                  title: updatedItem.title,
+                  description: updatedItem.description || '',
+                  id: itemId
+               }
+               successResponse(200, data[itemIndex], 'Item updated successfully', null, res);
+            } catch (e) {
+               errorResponse(400, e.message, res)
+            }
+         });
+      } else {
+         errorResponse(404, 'Item not found', res);
+      }
+   }
+
    else {
       errorResponse(405, 'Method not allowed', res);
    }
