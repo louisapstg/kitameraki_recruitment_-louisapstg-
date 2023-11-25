@@ -1,7 +1,9 @@
 const http = require('http');
 const url = require('url');
+const querystring = require('querystring');
 const { successResponse, errorResponse } = require('./response');
 const data = require('./data');
+const Paginate = require('./paginate');
 
 const server = http.createServer((req, res) => {
    const parsedUrl = url.parse(req.url);
@@ -11,8 +13,13 @@ const server = http.createServer((req, res) => {
 
    if (req.method === 'GET') {
       if (path === '/items') {
+         const queryParams = querystring.parse(parsedUrl.query);
+         const page = parseInt(queryParams.page) || 1;
+         const pageSize = parseInt(queryParams.pageSize) || 10;
+
          try {
-            successResponse(200, data, 'Items retrieved successfully', data.length, res);
+            const paginatedData = Paginate(data, page, pageSize);
+            successResponse(200, paginatedData, 'Items retrieved successfully', res);
          } catch (e) {
             errorResponse(404, e.message, res);
          }
@@ -21,12 +28,12 @@ const server = http.createServer((req, res) => {
          const item = data.find((item) => item.id === itemId);
 
          if (item) {
-            successResponse(200, item, 'Item retrieved successfully', data.length, res);
+            successResponse(200, item, 'Item retrieved successfully', res);
          } else {
             errorResponse(404, 'Item not found', res);
          }
       } else {
-         errorResponse(404, null, 'Not Found', null, res);
+         errorResponse(404, 'Not Found', null, res);
       }
    }
 
@@ -42,9 +49,9 @@ const server = http.createServer((req, res) => {
             const newItem = JSON.parse(body);
             if (!newItem.title) throw new Error("Missing required property '${title}'")
             newItem.description = newItem.description || ''
-            newItem.id = data.length + 1;
+            newItem.id + 1;
             data.push(newItem);
-            successResponse(201, newItem, "Data has been sent", data.length, res);
+            successResponse(201, newItem, "Data has been sent", res);
          } catch (e) {
             errorResponse(400, e.message, res);
          }
