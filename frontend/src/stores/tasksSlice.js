@@ -5,12 +5,12 @@ const initialState = {
     data: [],
     status: 'idle',
     error: null,
-    loading: false,
+    loading: true,
 }
 
-export const fetchTask = createAsyncThunk("fetch/task", async () => {
+export const fetchTask = createAsyncThunk("fetch/task", async (pageNumber) => {
     try {
-        const response = await TasksAPI.getData();
+        const response = await TasksAPI.getData(pageNumber);
         return response.payload.items
     } catch (err) {
         throw Error(err)
@@ -20,6 +20,15 @@ export const fetchTask = createAsyncThunk("fetch/task", async () => {
 export const createTask = createAsyncThunk("create/task", async (data) => {
     try {
         const response = await TasksAPI.postData(data)
+        return response.payload.items
+    } catch (err) {
+        throw Error(err)
+    }
+})
+
+export const editTask = createAsyncThunk("edit/task", async ({ id, newData }) => {
+    try {
+        const response = await TasksAPI.editData(id, newData)
         return response.payload.items
     } catch (err) {
         throw Error(err)
@@ -40,17 +49,21 @@ const tasksSlice = createSlice({
     initialState,
     extraReducers: (builder) => {
         builder
+            // fetch all data
             .addCase(fetchTask.pending, (state) => {
                 state.status = "loading"
             })
             .addCase(fetchTask.fulfilled, (state, action) => {
                 state.status = "succeeded"
+                state.loading = false
                 state.data = action.payload
             })
             .addCase(fetchTask.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.error.message;
             })
+
+            // add new data
             .addCase(createTask.pending, (state) => {
                 state.status = "loading"
             })
@@ -62,6 +75,24 @@ const tasksSlice = createSlice({
                 state.status = "failed";
                 state.error = action.error.message;
             })
+
+            // edit data
+            .addCase(editTask.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(editTask.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                const editedTaskIndex = state.data.findIndex(task => task.id === action.meta.arg.id);
+                if (editedTaskIndex !== -1) {
+                    state.data[editedTaskIndex] = action.payload;
+                }
+            })
+            .addCase(editTask.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.error.message;
+            })
+
+            // delete data
             .addCase(deleteTask.fulfilled, (state) => {
                 state.loading = !state.loading
             })
