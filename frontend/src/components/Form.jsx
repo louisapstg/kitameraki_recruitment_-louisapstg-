@@ -1,16 +1,18 @@
-/* eslint-disable no-unused-vars */
 import { PrimaryButton, TextField } from "@fluentui/react";
 import { useState } from "react";
-import TasksAPI from "../apis/tasks.api";
+import { useDispatch } from "react-redux";
+import { createTask, fetchTask } from "../stores/tasksSlice";
 const Form = () => {
+    const dispatch = useDispatch();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const result = await TasksAPI.postData({ title, description });
-            console.log("data posted", result);
+            await dispatch(createTask({ title, description }));
+            dispatch(fetchTask());
+            console.log("Data Submited", { title, description });
             setTitle("");
             setDescription("");
         } catch (e) {
