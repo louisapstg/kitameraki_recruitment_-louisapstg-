@@ -6,8 +6,8 @@ const HomePage = () => {
         <div>
             <Navbar />
             <div className="flex p-5">
-                <Form />
                 <CardContainer />
+                <Form />
             </div>
         </div>
     );
