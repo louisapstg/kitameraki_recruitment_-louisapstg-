@@ -1,7 +1,9 @@
+/* eslint-disable react/prop-types */
 import { PrimaryButton, TextField } from "@fluentui/react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { createTask, fetchTask } from "../stores/tasksSlice";
+import { createTask } from "../stores/tasksSlice";
+import Swal from "sweetalert2";
 const Form = () => {
     const dispatch = useDispatch();
     const [title, setTitle] = useState("");
@@ -11,10 +13,16 @@ const Form = () => {
         e.preventDefault();
         try {
             await dispatch(createTask({ title, description }));
-            dispatch(fetchTask());
-            console.log("Data Submited", { title, description });
-            setTitle("");
-            setDescription("");
+            Swal.fire({
+                position: "bottom-end",
+                icon: "success",
+                showConfirmButton: false,
+                timer: 1300,
+            }).then(() => {
+                setTimeout(() => {
+                    window.location.reload();
+                }, 100);
+            });
         } catch (e) {
             console.error("Error posting data", e.message);
         }
