@@ -13,7 +13,7 @@ const DetailModal = ({ data, modal, handleModal }) => {
             } overflow-y-auto overflow-x-hidden z-50`}
         >
             <div className="relative p-4 w-full max-w-2xl max-h-full">
-                <div className="relative bg-zinc-300 rounded-lg shadow-2xl">
+                <div className="relative bg-zinc-300 rounded-sm shadow-2xl">
                     <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
                         <h3 className="text-xl font-semibold text-gray-900">
                             {title}
