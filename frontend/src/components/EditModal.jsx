@@ -1,7 +1,7 @@
 import { PrimaryButton, TextField } from "@fluentui/react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { editTask, fetchTask } from "../stores/tasksSlice";
+import { editTask } from "../stores/tasksSlice";
 
 /* eslint-disable react/prop-types */
 const EditModal = ({ data, editModal, handleEditModal }) => {
@@ -31,7 +31,7 @@ const EditModal = ({ data, editModal, handleEditModal }) => {
         try {
             await dispatch(editTask({ id, newData: { title, description } }));
             handleEditModal();
-            dispatch(fetchTask());
+            window.location.reload();
         } catch (e) {
             console.error("Error editing data", e);
         }
