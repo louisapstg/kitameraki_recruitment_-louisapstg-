@@ -6,6 +6,7 @@ const initialState = {
     status: 'idle',
     error: null,
     loading: true,
+    hasMore: true
 }
 
 export const fetchTask = createAsyncThunk("fetch/task", async (pageNumber) => {
@@ -52,11 +53,13 @@ const tasksSlice = createSlice({
             // fetch all data
             .addCase(fetchTask.pending, (state) => {
                 state.status = "loading"
+                state.loading = true
             })
             .addCase(fetchTask.fulfilled, (state, action) => {
                 state.status = "succeeded"
+                if (action.payload < 1) state.hasMore = false
+                state.data = [...state.data, ...action.payload]
                 state.loading = false
-                state.data = action.payload
             })
             .addCase(fetchTask.rejected, (state, action) => {
                 state.status = "failed";
