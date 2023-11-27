@@ -26,8 +26,6 @@ const EditModal = ({ data, editModal, handleEditModal }) => {
         e.preventDefault();
         if (title === initialTitle)
             return alert("The title has not been changed");
-        if (description === initialDescription)
-            return alert("The description has been changed");
         try {
             await dispatch(editTask({ id, newData: { title, description } }));
             handleEditModal();
